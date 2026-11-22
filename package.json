@@ -1,0 +1,15 @@
+{
+  "name": "british-top",
+  "private": true,
+  "scripts": {
+    "dev": "live-server --port=5500 --watch=index.html,css,js --open=/",
+    "build:map": "node scripts/build-map.mjs"
+  },
+  "devDependencies": {
+    "d3-geo": "^3.1.2",
+    "live-server": "1.2.2",
+    "topojson-client": "^3.1.0",
+    "topojson-simplify": "^3.0.3",
+    "world-atlas": "^2.0.2"
+  }
+}

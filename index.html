@@ -4,218 +4,47 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Топ 4 Британські рок групи</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;800&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;scroll-snap-type:y mandatory;background:linear-gradient(135deg,#FAFAFA 0%,#CBD5E1 100%) fixed}
-body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#1f2937;-webkit-font-smoothing:antialiased}
-section{position:relative;height:100vh;width:100%;overflow:hidden;scroll-snap-align:start;display:flex;align-items:center;justify-content:center}
-
-/* ---------- Title (variant 2) ---------- */
-#s1{justify-content:flex-start;padding-left:8vw}
-h1{position:relative;z-index:5}
-.v2-text{position:relative;z-index:5;max-width:46vw}
-.v2-text h1{font-size:clamp(40px,5.6vw,88px);font-weight:800;line-height:1.04;letter-spacing:-.04em}
-.v2-text p{margin-top:28px;font-size:clamp(14px,1.2vw,18px);font-weight:300;color:#374151;letter-spacing:.01em}
-.fan{position:absolute;right:6vw;top:50%;width:46vw;height:70vh;transform:translateY(-50%)}
-.fan figure{position:absolute;left:50%;top:50%;width:min(24vh,17vw);aspect-ratio:1;margin:0;border-radius:6px;overflow:hidden;box-shadow:0 24px 48px -12px rgba(17,24,39,.4),0 4px 12px rgba(17,24,39,.15);transform-origin:50% 120%}
-.fan img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.7) contrast(.95)}
-.fan figure::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.35),rgba(203,213,225,.25));backdrop-filter:blur(1.5px);-webkit-backdrop-filter:blur(1.5px)}
-.fan figure:nth-child(1){transform:translate(-210%,-40%) rotate(-24deg)}
-.fan figure:nth-child(2){transform:translate(-150%,-66%) rotate(-12deg)}
-.fan figure:nth-child(3){transform:translate(-50%,-78%) rotate(0deg)}
-.fan figure:nth-child(4){transform:translate(50%,-66%) rotate(12deg)}
-.fan figure:nth-child(5){transform:translate(110%,-40%) rotate(24deg)}
-.down{position:absolute;z-index:10;bottom:4vh;left:50%;transform:translateX(-50%);width:64px;height:64px;border:0;background:none;color:#111827;cursor:pointer;display:grid;place-items:center;opacity:.6;transition:opacity .25s,transform .25s}
-.down:hover{opacity:1;transform:translateX(-50%) translateY(4px)}
-.down svg{width:42px;height:42px}
-
-/* ---------- Slider ---------- */
-.slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(18px,3.5vh,36px);opacity:0;pointer-events:none;transform:translateX(100vw);transition:transform 1000ms cubic-bezier(.25,1,.5,1),opacity 1000ms cubic-bezier(.25,1,.5,1);will-change:transform,opacity}
-.slide.before{transform:translateX(-100vw)}
-.slide.active{opacity:1;transform:translateX(0);pointer-events:none}
-.place{font-size:clamp(22px,3.4vh,34px);font-weight:500;letter-spacing:-.01em;color:#4b5563;min-height:1.2em}
-.band{font-size:clamp(34px,6vh,60px);font-weight:800;letter-spacing:-.03em;color:#111827;line-height:1}
-
-.disc{--d:clamp(380px,56vh,540px);position:relative;width:var(--d);height:var(--d);border-radius:50%;box-shadow:0 22px 50px -12px rgba(17,24,39,.35),0 6px 16px rgba(17,24,39,.15)}
-.rotor{position:absolute;inset:0;border-radius:50%;overflow:hidden;will-change:transform;-webkit-mask:radial-gradient(circle at center,transparent 0,transparent 7.4%,#000 7.6%);mask:radial-gradient(circle at center,transparent 0,transparent 7.4%,#000 7.6%)}
-.rotor img{width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none}
-.rotor::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at center,transparent 0,transparent 7.5%,rgba(255,255,255,.28) 7.6%,rgba(255,255,255,.28) 8.4%,transparent 8.6%,transparent 12.2%,rgba(255,255,255,.2) 12.4%,rgba(255,255,255,.2) 12.9%,transparent 13.1%),radial-gradient(circle at center,transparent 96%,rgba(255,255,255,.35) 98%,transparent 100%)}
-.ring{position:absolute;left:50%;top:50%;width:15%;height:15%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(255,255,255,.65);box-shadow:inset 0 0 0 1px rgba(17,24,39,.08)}
-.pp{position:absolute;left:50%;top:50%;width:32%;height:32%;transform:translate(-50%,-50%);border-radius:50%;border:0;background:transparent;cursor:pointer;display:grid;place-items:center;pointer-events:auto;color:#1f2937;-webkit-tap-highlight-color:transparent;outline:none}
-.pp svg{width:30%;height:30%;display:block;transition:transform .2s;filter:drop-shadow(0 0 1px rgba(255,255,255,.6))}
-.pp:hover svg{transform:scale(1.15)}
-.pp:focus-visible svg{outline:2px solid #111827;outline-offset:4px;border-radius:4px}
-.pp .i-pause{display:none}
-.pp.playing .i-pause{display:block}
-.pp.playing .i-play{display:none}
-.slide.active .pp{pointer-events:auto}
-.slide:not(.active) .pp{pointer-events:none}
-
-.nav{position:absolute;top:50%;transform:translateY(-50%);width:72px;height:96px;border:0;background:none;color:#111827;cursor:pointer;display:grid;place-items:center;opacity:.6;transition:opacity .25s,transform .25s;z-index:5}
-.nav svg{width:44px;height:72px}
-.nav:hover{opacity:1;transform:translateY(-50%) scale(1.15)}
-.nav.prev{left:clamp(16px,4vw,72px)}
-.nav.next{right:clamp(16px,4vw,72px)}
-.nav[hidden]{display:none}
-.nav:focus-visible,.down:focus-visible{outline:2px solid #111827;outline-offset:3px}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-</style>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preload" href="assets/fonts/onest-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/fonts.css">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<section id="s1">
-  <div class="v2-text">
-    <h1>Топ 4 Британські рок групи</h1>
-    <p>П’ять альбомів. Один рейтинг.</p>
+<!-- Екран завантаження: назва + ноти на нотному стані (js/loader.js) -->
+<div class="loader" id="loader" role="status" aria-label="Завантаження презентації">
+  <div class="loader__inner">
+    <h1 class="loader__title">Топ 4 Британські рок групи</h1>
+    <div class="loader__staff"></div>
   </div>
-  <div class="fan" aria-hidden="true">
-    <figure><img src="radiohead_in-rainbows_cover.jpg" alt=""></figure>
-    <figure><img src="david-bowie_the-man-who-sold-the-world_cover.jpg" alt=""></figure>
-    <figure><img src="the-beatles_hey-jude_cover.jpg" alt=""></figure>
-    <figure><img src="carcass_heartwork_cover.jpg" alt=""></figure>
-    <figure><img src="queen_the-game_cover.jpg" alt=""></figure>
-  </div>
-  <button class="down" id="down" aria-label="Прокрутити вниз"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8l8 8 8-8"/></svg></button>
-</section>
+</div>
 
-<section id="s2">
-  <button class="nav prev" id="prev" aria-label="Назад" hidden><svg viewBox="0 0 44 72" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="34,6 8,36 34,66"/></svg></button>
-  <button class="nav next" id="next" aria-label="Далі"><svg viewBox="0 0 44 72" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="10,6 36,36 10,66"/></svg></button>
-</section>
+<div class="intro" id="intro"></div>
+<div class="preloader" id="preloader" aria-hidden="true"></div>
 
-<script>
-var SLIDES=[
-  {place:'Honourable Mention',band:'Queen',cover:'queen_the-game_cover.jpg',audio:'Another One Bites The Dust - Queen.mp3',start:48},
-  {place:'4 місце',band:'Carcass',cover:'carcass_heartwork_cover.jpg',audio:'Buried Dreams - carcass.mp3',start:148},
-  {place:'3 місце',band:'The Beatles',cover:'the-beatles_hey-jude_cover.jpg',audio:'Hey Jude (Remastered 2009) - The Beatles.mp3',start:69},
-  {place:'2 місце',band:'David Bowie',cover:'david-bowie_the-man-who-sold-the-world_cover.jpg',audio:'The Man Who Sold the World (2015 Remaster) - David Bowie.mp3',start:45},
-  {place:'1 місце',band:'Radiohead',cover:'radiohead_in-rainbows_cover.jpg',audio:'All I Need - Radiohead.mp3',start:144}
-];
-var TOTAL=21000, FULL=20000, FADE=1000, MS_PER_TURN=3000, DUR=1000;
+<main id="app">
 
-var s2=document.getElementById('s2'), prevBtn=document.getElementById('prev'), nextBtn=document.getElementById('next');
-var cur=0, lock=false, inSlider=false;
+  <!-- Сцена 1: карта Європи -> наїзд на Британію -> всі місця рейтингу по черзі (js/ranking.js) -->
+  <section class="map" id="map">
+    <div class="map__stage">
+      <svg class="map__svg" id="mapSvg" aria-hidden="true"></svg>
+      <div class="bgs" id="bgs"></div>
+      <div class="cards" id="cards"></div>
+      <!-- Фінал: карта віддаляється, і поверх неї проявляється «Дякуємо за увагу» (js/thanks.js) -->
+      <div class="thanks" id="thanks"><div class="thanks__stage" id="thanksStage"></div></div>
+    </div>
+  </section>
 
-/* build slides */
-var players=SLIDES.map(function(d,i){
-  var el=document.createElement('div');
-  el.className='slide'+(i>0?'':' active');
-  el.innerHTML=
-    '<div class="place"></div>'+
-    '<div class="disc"><div class="rotor"><img alt=""></div><div class="ring"></div>'+
-    '<button class="pp" aria-label="Відтворити / пауза">'+
-    '<svg class="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>'+
-    '<svg class="i-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="5.5" y="4" width="4.5" height="16" rx="1"/><rect x="14" y="4" width="4.5" height="16" rx="1"/></svg>'+
-    '</button></div>'+
-    '<div class="band"></div>';
-  el.querySelector('.place').textContent=d.place;
-  el.querySelector('.band').textContent=d.band;
-  var img=el.querySelector('img'); img.src=encodeURI(d.cover); img.alt='Обкладинка: '+d.band;
-  s2.insertBefore(el,prevBtn);
-  var a=new Audio(); a.preload='metadata'; a.src=encodeURI(d.audio);
-  var p={d:d,el:el,audio:a,rotor:el.querySelector('.rotor'),btn:el.querySelector('.pp'),
-         elapsed:0,playing:false,last:0,raf:0,fadeStart:0,vol0:1,timer:0};
-  p.btn.addEventListener('click',function(){toggle(p);p.btn.blur();});
-  return p;
-});
+</main>
 
-function draw(p){
-  var ang=(p.elapsed/MS_PER_TURN)*360;
-  p.rotor.style.transform='rotate('+ang+'deg)';
-}
-function setIcon(p){p.btn.classList.toggle('playing',p.playing&&!p.fadeStart||p.playing);}
-
-function reset(p){
-  cancelAnimationFrame(p.raf); p.raf=0; clearTimeout(p.timer);
-  p.audio.pause();
-  try{p.audio.currentTime=p.d.start;}catch(e){}
-  p.audio.volume=1;
-  p.playing=false; p.fadeStart=0; p.elapsed=0;
-  p.rotor.style.transform='rotate(0deg)';
-  p.btn.classList.remove('playing');
-}
-
-function tick(p){
-  p.raf=0;
-  var now=performance.now();
-  if(p.playing) p.elapsed+=now-p.last;
-  p.last=now;
-  if(p.fadeStart){
-    var t=Math.min(1,(now-p.fadeStart)/FADE);
-    p.audio.volume=Math.max(0,p.vol0*(1-t));
-    draw(p);
-    if(t>=1){reset(p);return;}
-  }else{
-    if(p.elapsed>=TOTAL){reset(p);return;}
-    p.audio.volume=p.elapsed>FULL?Math.max(0,1-(p.elapsed-FULL)/FADE):1;
-    draw(p);
-  }
-  if(p.playing) p.raf=requestAnimationFrame(function(){tick(p);});
-}
-
-function toggle(p){
-  if(p.fadeStart) return;
-  if(p.playing){
-    p.playing=false; p.audio.pause();
-    cancelAnimationFrame(p.raf); p.raf=0;
-    p.btn.classList.remove('playing');
-  }else{
-    if(p.elapsed===0){try{p.audio.currentTime=p.d.start;}catch(e){} p.audio.volume=1;}
-    p.playing=true; p.last=performance.now();
-    var pr=p.audio.play(); if(pr&&pr.catch) pr.catch(function(){});
-    p.btn.classList.add('playing');
-    if(!p.raf) p.raf=requestAnimationFrame(function(){tick(p);});
-  }
-}
-
-function leave(p){
-  if(p.playing){
-    p.fadeStart=performance.now(); p.vol0=p.audio.volume; p.last=p.fadeStart;
-    if(!p.raf) p.raf=requestAnimationFrame(function(){tick(p);});
-  }else{
-    clearTimeout(p.timer);
-    p.timer=setTimeout(function(){reset(p);},FADE);
-  }
-}
-
-function render(){
-  players.forEach(function(p,i){
-    p.el.classList.toggle('active',i===cur);
-    p.el.classList.toggle('before',i<cur);
-  });
-  prevBtn.hidden=cur===0;
-  nextBtn.hidden=cur===players.length-1;
-}
-
-function go(dir){
-  if(lock) return;
-  var n=cur+dir;
-  if(n<0||n>=players.length) return;
-  lock=true;
-  leave(players[cur]);
-  cur=n; render();
-  setTimeout(function(){lock=false;},DUR);
-}
-
-prevBtn.addEventListener('click',function(){go(-1);prevBtn.blur();});
-nextBtn.addEventListener('click',function(){go(1);nextBtn.blur();});
-document.getElementById('down').addEventListener('click',function(){s2.scrollIntoView({behavior:'smooth'});});
-
-new IntersectionObserver(function(e){inSlider=e[0].intersectionRatio>=.5;},{threshold:[0,.5,1]}).observe(s2);
-
-document.addEventListener('keydown',function(e){
-  if(e.code==='Space'||e.key===' '){
-    if(inSlider){e.preventDefault(); if(!e.repeat) toggle(players[cur]);}
-    else e.preventDefault();
-  }else if(inSlider&&e.key==='ArrowLeft'){e.preventDefault();go(-1);}
-  else if(inSlider&&e.key==='ArrowRight'){e.preventDefault();go(1);}
-});
-document.addEventListener('keyup',function(e){if(e.code==='Space'||e.key===' ')e.preventDefault();});
-
-render();
-</script>
+<script src="js/ranking.js"></script>
+<script src="js/loader.js"></script>
+<script src="js/vendor/lenis.min.js"></script>
+<script src="js/scroll.js"></script>
+<script src="js/europe-data.js"></script>
+<script src="js/preloader.js"></script>
+<script src="js/player.js"></script>
+<script src="js/map-scene.js"></script>
+<script src="js/thanks.js"></script>
 </body>
 </html>

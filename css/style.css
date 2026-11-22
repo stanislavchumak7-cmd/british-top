@@ -1,0 +1,273 @@
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:#fafafa;scrollbar-gutter:stable} /* резервуємо місце під скролбар: без стрибка ширини, коли прелоадер знімає блокування скролу */
+body{font-family:Onest,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#111827;-webkit-font-smoothing:antialiased}
+
+/* Lenis */
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-stopped{overflow:hidden}
+
+/* ---------- Preloader (керується скролом) ----------
+   Довжини фаз (--reveal, --hold, --exit) виставляє js/preloader.js */
+.intro{height:calc(var(--reveal,250vh) + var(--hold,40vh) + var(--exit,70vh))}
+.preloader{position:fixed;inset:0;z-index:9999;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;pointer-events:none;will-change:transform}
+.preloader.is-gone{visibility:hidden}
+
+.lines{display:flex;flex-direction:column;align-items:center;gap:.14em;text-align:center;font-size:clamp(24px,6.8vw,132px);font-weight:800;letter-spacing:-.045em;line-height:.95;text-transform:uppercase;padding:0 5vw}
+/* wrapper рядка: ховає літери, поки вони «внизу». Запас зверху/знизу, щоб не різались «Й», «Щ» тощо */
+.line{display:block;overflow:hidden;padding-block:.2em;margin-block:-.2em;white-space:nowrap}
+.word{display:inline-block;margin-right:.26em}
+.word:last-child{margin-right:0}
+.chunk{display:inline-block;transform:translateY(150%);will-change:transform}
+
+/* підказка «гортайте» (мишка), перенесена з портфоліо */
+.scroll-cue{position:absolute;bottom:1.4rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;width:2.4rem;color:#fff;transition:opacity .4s ease}
+.scroll-cue svg{display:block;width:100%;height:auto;overflow:visible}
+.scroll-cue rect,.scroll-cue line,.scroll-cue path{stroke:currentColor;stroke-width:1;stroke-linecap:round;stroke-linejoin:round}
+
+.cue__body{stroke-dasharray:1;stroke-dashoffset:1;animation:cue-draw 1.3s cubic-bezier(.65,0,.35,1) .15s forwards}
+.cue__wheel{stroke-width:1.8;opacity:0;transform-box:fill-box;transform-origin:center;animation:cue-wheel 2.4s cubic-bezier(.5,0,.3,1) 1.1s infinite}
+.cue__chevron{opacity:0}
+.cue__chevron--1{animation:cue-chevron 2.4s ease-in-out 1.35s infinite}
+.cue__chevron--2{animation:cue-chevron 2.4s ease-in-out 1.6s infinite}
+@keyframes cue-draw{to{stroke-dashoffset:0}}
+@keyframes cue-wheel{
+  0%{opacity:0;transform:translateY(-2px) scaleY(.6)}
+  14%{opacity:1;transform:translateY(0) scaleY(1)}
+  58%{opacity:1;transform:translateY(15px) scaleY(1)}
+  80%,100%{opacity:0;transform:translateY(21px) scaleY(.5)}
+}
+@keyframes cue-chevron{
+  0%,12%{opacity:0;transform:translateY(-3px)}
+  40%{opacity:.85;transform:translateY(0)}
+  75%,100%{opacity:0;transform:translateY(4px)}
+}
+
+/* телефони й тачскрін: замість мишки — палець, що свайпить вгору */
+.cue__touch{display:none}
+.cue__hand{opacity:0}
+.scroll-cue .cue__finger{fill:none;stroke-width:.9}
+@media (hover:none),(pointer:coarse),(max-width:700px){
+  .scroll-cue .cue__mouse{display:none}
+  .scroll-cue .cue__touch{display:block}
+  .cue__hand{animation:cue-swipe 2.2s cubic-bezier(.45,0,.25,1) .4s infinite}
+}
+@keyframes cue-swipe{
+  0%{opacity:0;transform:translateY(10px)}
+  18%{opacity:1;transform:translateY(10px)}
+  62%{opacity:1;transform:translateY(-12px)}
+  82%,100%{opacity:0;transform:translateY(-14px)}
+}
+@media (prefers-reduced-motion:reduce){.cue__hand{animation:none;opacity:1}}
+
+/* main підсувається під зону виїзду прелоадера: він виїжджає вгору і відкриває сторінку на місці */
+main{position:relative;margin-top:calc(var(--exit,70vh) * -1);min-height:calc(100vh + var(--exit,70vh))}
+
+/* ---------- Сцена: карта Європи -> Британія -> Honourable Mention ---------- */
+.map{position:relative} /* висоту виставляє js/map-scene.js */
+.map__stage{position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden;background:#fafafa}
+.map__svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.map__svg path{vector-effect:non-scaling-stroke;stroke:#fafafa;stroke-width:1;stroke-linejoin:round}
+.map__pin-dot{fill:#e11d48}
+.map__pin-ring{fill:none;stroke:#e11d48;stroke-width:1.5;vector-effect:non-scaling-stroke;transform-box:fill-box;transform-origin:center;animation:pin-pulse 2s ease-out infinite}
+@keyframes pin-pulse{0%{transform:scale(.4);opacity:.9}100%{transform:scale(2.6);opacity:0}}
+
+.cards{position:absolute;inset:0;pointer-events:none}
+.card{position:absolute;left:46vw;top:50%;transform:translateY(-50%);width:50vw;color:#111827;pointer-events:none}
+.card[hidden]{display:block;visibility:hidden} /* не display:none — інакше анімації (еквалайзер) скидаються */
+.card__label{font-size:clamp(12px,1.1vw,16px);font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:#6b7280;margin-bottom:.9em}
+.card__band{white-space:nowrap;font-size:clamp(48px,8.4vw,150px);font-weight:800;letter-spacing:-.045em;line-height:.9;text-transform:uppercase;margin-bottom:.22em}
+.card__cover{width:min(22vw,40vh);aspect-ratio:1;overflow:hidden;border-radius:4px;box-shadow:0 24px 48px -12px rgba(17,24,39,.35);margin-bottom:1.4em;clip-path:inset(100% 0 0 0)}
+.card__cover img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.25)}
+.card__meta{font-size:clamp(13px,1.2vw,18px);font-weight:500;line-height:1.5;color:#374151}
+/* wrapper рядка: текст виїжджає знизу */
+.card .rv{display:block;transform:translateY(120%)}
+.card p,.card h2{overflow:hidden;padding-block:.15em}
+
+@media (max-width:700px),(max-aspect-ratio:1/1){
+  .card{left:6vw;right:6vw;top:auto;bottom:5vh;transform:none;width:auto;display:grid;grid-template-columns:auto 1fr;column-gap:4vw;align-items:end}
+  .card__label{grid-column:1/-1;margin-bottom:.4em}
+  .card__band{grid-column:1/-1;font-size:clamp(44px,15vw,100px);margin-bottom:.15em}
+  .card__cover{width:28vw;margin-bottom:0}
+}
+
+/* ---------- Плеєр картки ---------- */
+.card__row{display:flex;align-items:stretch;gap:2.4vw;margin-bottom:1.4em}
+.card__cover{position:relative;margin-bottom:0;flex:none}
+
+/* нотка на обкладинці: з'являється при ховері, лінії «домальовуються» */
+.card.is-away .card__play{pointer-events:none!important}
+.card__play{position:absolute;inset:0;border:0;background:rgba(17,24,39,0);color:#fff;cursor:pointer;display:grid;place-items:center;pointer-events:auto;transition:background .35s ease;-webkit-tap-highlight-color:transparent;outline:none}
+.card__play:hover,.card__play:focus-visible{background:rgba(17,24,39,.42)}
+.card__play svg{grid-area:1/1;width:28%;height:auto;overflow:visible}
+.card__play .i-note{opacity:0;transform:scale(.55) rotate(-14deg);transition:opacity .3s ease,transform .6s cubic-bezier(.34,1.56,.64,1)}
+.card__play .i-note path,.card__play .i-note circle{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .8s cubic-bezier(.65,0,.35,1)}
+.card__play:hover .i-note,.card__play:focus-visible .i-note{opacity:1;transform:scale(1) rotate(0);animation:note-bob 2s ease-in-out .8s infinite}
+.card__play:hover .i-note path,.card__play:hover .i-note circle,
+.card__play:focus-visible .i-note path,.card__play:focus-visible .i-note circle{stroke-dashoffset:0}
+@keyframes note-bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6%) rotate(-4deg)}}
+/* під час відтворення на ховері — пауза */
+.card__play .i-pause{display:none;opacity:0;transition:opacity .3s}
+.card.is-playing .card__play .i-note{display:none}
+.card.is-playing .card__play .i-pause{display:block}
+.card.is-playing .card__play:hover .i-pause,.card.is-playing .card__play:focus-visible .i-pause{opacity:1}
+
+/* панель плеєра: росте справа від обкладинки */
+.player{flex:1;min-width:0;max-width:24vw;display:flex;flex-direction:column;justify-content:flex-end;gap:1.1rem;color:#111827;pointer-events:none}
+.player.is-open:not(.is-away){pointer-events:auto}
+
+.player__eq{display:flex;align-items:flex-end;gap:3px;height:clamp(56px,12vh,120px)}
+/* зовнішній span «виростає» при відкритті, внутрішній <i> танцює; на паузі анімація лише завмирає (play-state), тож без стрибків */
+.player__bar{flex:1;height:100%;transform-origin:50% 100%;transform:scaleY(0);transition:transform .7s cubic-bezier(.16,1,.3,1);transition-delay:calc(var(--i)*22ms)}
+.player.is-open:not(.is-away) .player__bar{transform:scaleY(1)}
+.player__bar i{display:block;width:100%;height:100%;background:#111827;border-radius:2px;transform-origin:50% 100%;transform:scaleY(var(--h));animation:eq var(--d) ease-in-out var(--del) infinite alternate;animation-play-state:paused}
+.card.is-playing .player__bar i{animation-play-state:running}
+@keyframes eq{from{transform:scaleY(.12)}to{transform:scaleY(var(--h))}}
+
+.player__track{position:relative;height:20px;margin-block:-9px;display:flex;align-items:center;cursor:pointer;touch-action:none;transform:scaleX(0);transform-origin:left;transition:transform .9s cubic-bezier(.65,0,.35,1) .25s;outline:none}
+.player__track:focus-visible .player__line{outline:2px solid #111827;outline-offset:6px}
+.player__line{position:relative;width:100%;height:1px;background:#d1d5db}
+.player.is-open:not(.is-away) .player__track{transform:scaleX(1)}
+.player__fill{position:absolute;inset:0;pointer-events:none;background:#111827;transform:scaleX(0);transform-origin:left}
+.player__dot{position:absolute;top:50%;left:0;width:11px;height:11px;pointer-events:none;border-radius:50%;background:#111827;transform:translate(-50%,-50%)}
+
+.player__times{display:flex;justify-content:space-between;font-size:12px;font-weight:500;letter-spacing:.06em;color:#6b7280;font-variant-numeric:tabular-nums;opacity:0;transition:opacity .5s ease .6s}
+.player.is-open:not(.is-away) .player__times{opacity:1}
+
+.player__controls{display:flex;align-items:center;justify-content:space-between}
+.pc{width:40px;height:40px;border:0;border-radius:50%;background:none;color:#111827;display:grid;place-items:center;cursor:pointer;opacity:0;transform:translateY(14px) scale(.7);transition:opacity .5s ease,transform .6s cubic-bezier(.34,1.56,.64,1),background .2s;-webkit-tap-highlight-color:transparent}
+.pc svg{width:20px;height:20px;display:block}
+.pc:hover{background:rgba(17,24,39,.08)}
+.pc:focus-visible{outline:2px solid #111827;outline-offset:2px}
+.pc--play{width:56px;height:56px;background:#111827;color:#fff}
+.pc--play svg{width:22px;height:22px}
+.pc--play:hover{background:#000}
+.pc--restart{transition-delay:.7s}
+/* гучність: кнопка + повзунок */
+.pv{position:relative;display:flex;align-items:center}
+.pv.is-open .pc--mute{background:rgba(17,24,39,.09)}
+/* повзунок гучності спливає над іконкою тільки після кліку */
+.pv__pop{position:absolute;left:50%;margin-left:-22px;bottom:calc(100% + 10px);width:44px;height:148px;border-radius:999px;background:rgba(250,250,250,.62);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 10px 28px -12px rgba(17,24,39,.35),0 0 0 1px rgba(17,24,39,.06);opacity:0;transform:translateY(8px) scale(.92);transform-origin:50% 100%;pointer-events:none;transition:opacity .25s ease,transform .35s cubic-bezier(.34,1.56,.64,1);z-index:3}
+.pv.is-open .pv__pop{opacity:1;transform:none;pointer-events:auto}
+.pv__range{--p:100%;-webkit-appearance:none;appearance:none;position:absolute;left:50%;top:50%;width:116px;height:24px;margin:0;background:transparent;cursor:pointer;outline:none;transform:translate(-50%,-50%) rotate(-90deg)}
+.pv__range::-webkit-slider-runnable-track{height:3px;border-radius:2px;background:linear-gradient(to right,#111827 var(--p),#d1d5db var(--p))}
+.pv__range::-moz-range-track{height:3px;border-radius:2px;background:linear-gradient(to right,#111827 var(--p),#d1d5db var(--p))}
+.pv__range::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:#111827;border:0;margin-top:-6px;transition:transform .2s}
+.pv__range:hover::-webkit-slider-thumb{transform:scale(1.2)}
+.pv__range::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:#111827;border:0}
+.pv__range:focus-visible::-webkit-slider-thumb{outline:2px solid #111827;outline-offset:3px}
+.pc--play{transition-delay:.8s}
+.pc--mute{transition-delay:.9s}
+.player.is-open:not(.is-away) .pc{opacity:1;transform:none}
+
+@media (hover:none){
+  .card__play{background:rgba(17,24,39,.22)}
+  .card__play .i-note{opacity:1;transform:none}
+  .card__play .i-note path,.card__play .i-note circle{stroke-dashoffset:0}
+  .card.is-playing .card__play .i-pause{opacity:1}
+}
+@media (max-width:700px),(max-aspect-ratio:1/1){
+  .card__row{grid-column:1/-1;margin-bottom:.8em;gap:4vw}
+  .card__meta{grid-column:1/-1}
+  .player{max-width:none}
+  .player__eq{height:clamp(40px,7vh,64px)}
+}
+@media (prefers-reduced-motion:reduce){
+  .player__bar i{animation:none}
+}
+
+/* перемикач «Фрагмент / Вся пісня» */
+.player__mode{display:flex;align-self:flex-start;margin-top:.2rem;padding:3px;border-radius:999px;background:rgba(17,24,39,.07);opacity:0;transform:translateY(10px);transition:opacity .5s ease 1s,transform .6s cubic-bezier(.16,1,.3,1) 1s}
+.player.is-open:not(.is-away) .player__mode{opacity:1;transform:none}
+.pm{border:0;background:none;font:inherit;font-size:12px;font-weight:600;letter-spacing:.04em;color:#6b7280;padding:.5em 1em;border-radius:999px;cursor:pointer;transition:background .25s,color .25s;-webkit-tap-highlight-color:transparent}
+.pm.is-on{background:#111827;color:#fff}
+.pm:not(.is-on):hover{color:#111827}
+.pm:focus-visible{outline:2px solid #111827;outline-offset:2px}
+
+/* нотка замість курсора над обкладинкою (на пристроях з мишкою) */
+.note-cursor{position:fixed;left:0;top:0;z-index:10000;width:68px;height:68px;margin:-34px 0 0 -34px;border-radius:50%;background:rgba(17,24,39,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:#fff;display:none;place-items:center;pointer-events:none;opacity:0;scale:.3;transition:opacity .25s ease,scale .5s cubic-bezier(.34,1.56,.64,1)}
+.note-cursor svg{grid-area:1/1;width:46%;height:auto;overflow:visible}
+.note-cursor .nc-note path,.note-cursor .nc-note circle{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .7s cubic-bezier(.65,0,.35,1)}
+.note-cursor .nc-pause{display:none}
+.note-cursor.is-on{opacity:1;scale:1}
+.note-cursor.is-on .nc-note{animation:note-bob 2s ease-in-out .7s infinite}
+.note-cursor.is-on .nc-note path,.note-cursor.is-on .nc-note circle{stroke-dashoffset:0}
+.note-cursor.is-pause .nc-note{display:none}
+.note-cursor.is-pause .nc-pause{display:block}
+
+@media (hover:hover) and (pointer:fine){
+  .note-cursor{display:grid}
+  .card__play{cursor:none}
+  .card__play svg{display:none!important}
+  .card__play:hover,.card__play:focus-visible{background:rgba(17,24,39,.16)}
+}
+
+/* плеєр зникає зі слайдом: усе швидко «складається» у зворотному порядку */
+.player.is-away .player__bar{transition-duration:.45s;transition-delay:calc((27 - var(--i)) * 14ms)}
+.player.is-away .player__track{transition:transform .55s cubic-bezier(.65,0,.35,1) .1s}
+.player.is-away .player__times,.player.is-away .player__mode,.player.is-away .pc,.player.is-away .pv__range{transition-duration:.3s;transition-delay:0s}
+.player.is-away .pc--restart{transition-delay:.12s}
+.player.is-away .pc--play{transition-delay:.06s}
+
+.pv .pc svg{width:22px;height:22px}
+
+/* перед зміною слайда плеєр їде вправо і розчиняється */
+.player{transition:transform .6s cubic-bezier(.65,0,.35,1),opacity .45s ease .1s}
+.player.is-away{opacity:0;transform:translateX(7vw)}
+
+/* фонове відео слайда: приглушене, чорно-біле, розчиняється зліва */
+.bgs{position:absolute;inset:0;pointer-events:none}
+.bg{position:absolute;right:0;top:0;width:64vw;height:100%;object-fit:cover;opacity:0;filter:grayscale(1) contrast(1.05);-webkit-mask-image:linear-gradient(to right,transparent 0,#000 40%);mask-image:linear-gradient(to right,transparent 0,#000 40%)}
+@media (max-width:700px),(max-aspect-ratio:1/1){
+  .bg{width:100%;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 40%);mask-image:linear-gradient(to bottom,transparent 0,#000 40%)}
+}
+
+.bgw{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease}
+.bgw.is-ready{opacity:1}
+
+/* ---------- Фінал: Дякую за увагу ---------- */
+.thanks{position:absolute;inset:0;pointer-events:none}
+.thanks__stage{position:absolute;inset:0;background:transparent;color:#111827;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(20px,5vh,52px);overflow:hidden;padding:0 5vw;text-align:center}
+.thanks__title{display:flex;flex-direction:column;align-items:center;gap:.14em;font-size:clamp(38px,8.4vw,156px);font-weight:800;letter-spacing:-.05em;line-height:.92;text-transform:uppercase}
+.thanks__names{list-style:none;display:flex;flex-direction:column;align-items:center;gap:.5em;font-size:clamp(17px,2.3vw,38px);font-weight:500;letter-spacing:.02em;color:#374151}
+.thanks__names .line{padding-block:.25em;margin-block:-.25em}
+.tn{display:block;transform:translateY(130%)}
+
+/* ---------- Екран завантаження ---------- */
+html.is-locked{overflow:hidden;overscroll-behavior:none}
+html.is-locked body{touch-action:none}
+.loader{position:fixed;inset:0;z-index:10001;background:#000;color:#fff;display:grid;place-items:center;transition:opacity .9s ease,visibility 0s linear .9s}
+.loader.is-done{opacity:0;visibility:hidden;pointer-events:none}
+.loader__inner{display:flex;flex-direction:column;align-items:center;gap:clamp(24px,6vh,56px);padding:0 6vw;text-align:center}
+.loader__title{text-wrap:balance;font-size:clamp(34px,7.4vw,118px);font-weight:800;letter-spacing:-.045em;line-height:.98;text-transform:uppercase;opacity:0;transform:translateY(16px);transition:opacity .9s ease,transform 1s cubic-bezier(.16,1,.3,1)}
+.loader.is-font .loader__title{opacity:1;transform:none}
+.loader__staff{width:min(88vw,900px)}
+.staff{width:100%;height:auto;display:block;overflow:visible}
+
+/* ---------- Адаптивність (резинова верстка) ---------- */
+/* книжкова орієнтація / вузькі екрани: імена прелоадера і назва на екрані завантаження більші */
+@media (max-width:700px),(max-aspect-ratio:1/1){
+  .lines{font-size:clamp(24px,8.4vw,84px)}
+  .loader__title{font-size:clamp(34px,11vw,100px)}
+  .card__row{align-items:flex-end}
+  .card__cover{width:min(34vw,26vh);align-self:flex-end}
+  .thanks__title{font-size:clamp(38px,15vw,120px)}
+  .thanks__names{font-size:clamp(16px,4.6vw,30px)}
+}
+/* дуже широкі екрани: не даємо тексту розповзатись */
+@media (min-width:1900px){
+  .card{width:44vw}
+}
+/* низькі екрани (телефон у ландшафті, ноутбук з панелями): стискаємо вертикальні відступи */
+@media (max-height:620px) and (min-aspect-ratio:1/1){
+  .card__band{font-size:clamp(40px,6.6vw,110px)}
+  .card__cover{width:min(18vw,34vh)}
+  .card__label{margin-bottom:.5em}
+  .card__row{margin-bottom:.8em}
+  .player__eq{height:clamp(36px,9vh,70px)}
+  .player{gap:.7rem}
+  .pc--play{width:46px;height:46px}
+  .thanks__title{font-size:clamp(32px,6.6vw,110px)}
+  .thanks__names{font-size:clamp(14px,1.9vw,26px);gap:.3em}
+  .lines{font-size:clamp(22px,5.4vw,70px)}
+}
