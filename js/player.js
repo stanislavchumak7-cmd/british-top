@@ -1,12 +1,15 @@
 /* Плеєр однієї картки.
-   Режими: «Фрагмент» (21 с з потрібної секунди, остання секунда — fade-out) і «Вся пісня».
+   Режими: «Фрагмент» (33 с з потрібної секунди, остання секунда — fade-out) і «Вся пісня».
+   Повернення «Вся пісня» -> «Фрагмент»: якщо трек зараз усередині відрізка [start, start+33) — грає далі без стрибка,
+   інакше коротко затихає, переходить на start і наростає знову.
    На обкладинці замість курсора — нотка (на тачскрині — звичайна кнопка).
    Використання: createPlayer(cardElement, {audio, start}) -> {stop(), isActive(), ...} */
 (function () {
-  var FRAGMENT = 21;   // с
+  var FRAGMENT = 33;   // с
   var FADE = 1;        // с наприкінці фрагмента
   var muted = false;
   var userVol = 1;       // гучність, яку виставив користувач (0..1), спільна для всіх слайдів
+  var XFADE = 250;       // мс: затихання/наростання, коли з «Вся пісня» повертаємось у «Фрагмент» з-за меж відрізка
   var AWAY_FADE = 700;   // мс плавного затихання, коли слайд іде
   var current = null;  // той, що грає зараз (одночасно грає лише один)
   var all = [];
@@ -98,6 +101,7 @@
 
     var fullSong = false;   // режим цього слайда: false — фрагмент, true — вся пісня (у кожного слайда свій)
     var audio = null, raf = 0, playing = false, needSeek = true, active = false;
+    var xf = null;   // перехід на start при поверненні у «Фрагмент» з-за меж відрізка: {phase: 'down'|'up', t0}
     var away = false, awayStart = 0;   // away — слайд іде геть: плеєр ховається, звук плавно затихає
 
     /* межі поточного режиму: фрагмент або вся пісня */
@@ -138,20 +142,34 @@
     function loop() {
       raf = 0;
       if (!playing) return;
+      var now = performance.now();
+      var xfk = 1;      // множник гучності під час переходу на start
+      if (xf) {
+        var xp = clamp((now - xf.t0) / XFADE);
+        if (xf.phase === 'down') {
+          xfk = 1 - xp;
+          if (xp >= 1) { audio.currentTime = from(); xf = { phase: 'up', t0: now }; xfk = 0; }
+        } else {
+          xfk = xp;
+          if (xp >= 1) xf = null;
+        }
+      }
+      var leaving = !!(xf && xf.phase === 'down');   // позиція ще за межами відрізка — кінець фрагмента не перевіряємо
       var t = audio.currentTime - from();
-      if (!fullSong && t >= FRAGMENT) { reset(); return; }
-      var fade = !fullSong && t > FRAGMENT - FADE ? clamp((FRAGMENT - t) / FADE) : 1;
+      if (!fullSong && !leaving && t >= FRAGMENT) { reset(); return; }
+      var fade = !fullSong && !leaving && t > FRAGMENT - FADE ? clamp((FRAGMENT - t) / FADE) : 1;
       var af = 1;
       if (awayStart) {
         af = 1 - clamp((performance.now() - awayStart) / AWAY_FADE);
         if (af <= 0) { pause(); return; }   // затихло — пауза, позиція лишається
       }
-      audio.volume = userVol * fade * af;
-      draw(Math.max(0, t));
+      audio.volume = userVol * fade * af * xfk;
+      draw(Math.min(Math.max(0, t), len() || FRAGMENT));
       raf = requestAnimationFrame(loop);
     }
     function pause() {
       awayStart = 0;
+      xf = null;
       if (audio) audio.pause();
       cancelAnimationFrame(raf); raf = 0;
       setPlaying(false);
@@ -172,6 +190,7 @@
       audio.muted = muted;
       audio.volume = userVol;
       awayStart = 0;
+      xf = null;
       if (needSeek) seekStart();
       var pr = audio.play(); if (pr && pr.catch) pr.catch(function () {});
       setPlaying(true);
@@ -276,11 +295,22 @@
       bFull.classList.toggle('is-on', fullSong);
       bFrag.setAttribute('aria-pressed', String(!fullSong));
       bFull.setAttribute('aria-pressed', String(fullSong));
+      xf = null;
       if (fullSong) ensure();       // щоб дізнатись тривалість
       setEnd();
-      if (playing) {
-        /* у повній версії продовжуємо з поточного місця, повертаючись у фрагмент — на його початок */
-        if (!fullSong) { audio.currentTime = track.start; }
+      if (fullSong) {
+        /* у повній версії під час гри позицію не чіпаємо; на паузі — з початку пісні */
+        if (!playing) { needSeek = true; seekStart(); draw(0); }
+        return;
+      }
+      /* повернення у «Фрагмент»: якщо позиція всередині [start, start+FRAGMENT) — лишаємо її (без стрибка),
+         інакше йдемо на start (під час гри — через коротке затихання) */
+      var ct = audio && audio.readyState >= 1 && !needSeek ? audio.currentTime : -1;
+      var inside = ct >= track.start && ct < track.start + FRAGMENT;
+      if (inside) {
+        draw(ct - track.start);
+      } else if (playing) {
+        xf = { phase: 'down', t0: performance.now() };
       } else {
         needSeek = true; seekStart(); draw(0);
       }

@@ -35,7 +35,7 @@ for (const f of countries) {
 if (!uk) throw new Error('United Kingdom not found');
 
 /* міста, де «живуть» гурти зі списку (lon, lat) */
-const CITIES = { london: [-0.12, 51.5], liverpool: [-2.99, 53.41], oxford: [-1.26, 51.75] };
+const CITIES = { london: [-0.12, 51.5], liverpool: [-2.99, 53.41], oxford: [-1.26, 51.75], birmingham: [-1.8904, 52.4862] };
 const cities = {};
 for (const k in CITIES) cities[k] = projection(CITIES[k]);
 const data = { w: W, h: H, countries: out, uk, cities };
